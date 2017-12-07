@@ -23,3 +23,11 @@ def upload_file(request):
     # files automatically and upload parts in parallel.
     s3.upload_file(path_to_file, bucket_name, "{0}.{1}".format(filename, str(time.time())))
     return render(request, "upload-file.html")
+
+
+def download_file_from_s_three(request):
+
+    print(request)
+    with open('download_file.txt', 'w') as f:
+        f.write('hello')
+        f.close()
