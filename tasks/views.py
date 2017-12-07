@@ -33,4 +33,8 @@ def download_file_from_s_three(request):
     token = body['Token']
     topic_arn = body['TopicArn']
 
+    with open('request.txt', 'w') as f:
+        f.write("{0} {1}".format(token, topic_arn))
+        f.close()
+
     return JsonResponse({'Token': token, 'TopicArn': topic_arn})
