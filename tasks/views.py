@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from todo_app.settings import BASE_DIR
+from django.views.decorators.csrf import csrf_exempt
 
 import boto3
 import time
 import json
+import logging
 
-
+logger = logging.getLogger(__name__)
 # Create your views here.
 def dashboard(request):
     return render(request, "dashboard.html")
@@ -29,12 +31,8 @@ def upload_file(request):
 
 def download_file_from_s_three(request):
 
-    body = json.loads(request.body)
-    token = body['Token']
-    topic_arn = body['TopicArn']
-
-    with open('request.txt', 'w') as f:
-        f.write("{0} {1}".format(token, topic_arn))
-        f.close()
+    token = request.POST['Token']
+    topic_arn = request.POST['TopicArn']
+    logger.error(token)
 
     return JsonResponse({'Token': token, 'TopicArn': topic_arn})
