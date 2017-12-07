@@ -35,4 +35,4 @@ def download_file_from_s_three(request):
     topic_arn = request.POST['TopicArn']
     logger.error(token)
 
-    return JsonResponse({'Token': token, 'TopicArn': topic_arn})
+    return JsonResponse({'token': token, 'TopicArn': topic_arn})
