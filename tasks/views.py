@@ -3,14 +3,18 @@ from django.http import JsonResponse
 from todo_app.settings import BASE_DIR
 from django.views.decorators.csrf import csrf_exempt
 
+import urllib.request
 import boto3
 import time
 import json
 import logging
 
 logger = logging.getLogger(__name__)
+
+
 # Create your views here.
 def dashboard(request):
+    print('dashboard')
     return render(request, "dashboard.html")
 
 
@@ -29,17 +33,36 @@ def upload_file(request):
     return render(request, "upload-file.html")
 
 
+@csrf_exempt
 def download_file_from_s_three(request):
-    #
-    # body = request.body.decode('utf-8')
-    # logger.error(body)
-    # body_data = json.loads(request.body.decode('utf-8'))
-    # logger.error(body_data)
+    body_data = json.loads(request.body.decode('utf-8'))
+    snsType = body_data.get('Type', '')
 
-    token = request.POST.get('Token')
-    topic_arn = request.POST.get('TopicArn')
+    if snsType == 'Notification':
+        s_three = boto3.client('s3')
 
-    logger.debug('token: {0}, topic_arn: {1}'.format(token, topic_arn))
+        message = body_data.get('Message', {})
+        records = message.get('Records', {})
+        s = records[0].get('s3', {})
+        bucket = s.get('bucket', {})
+        bucket_name = bucket['name']
+        obj = s.get('object', {})
 
+        response = s_three.get_object(
+            Bucket=bucket_name,
+            Key=obj['key'],
+        )
 
-    return JsonResponse({'token': token, 'TopicArn': topic_arn})
+        stream_data = response['Body'].read()
+        filename = obj['key'].split('/')[-1]
+
+        with open(filename, 'wb') as f:
+            f.write(stream_data)
+            f.close()
+
+    if snsType == 'SubscriptionConfirmation':
+        subscription_response = ""
+        with urllib.request.urlopen(body_data['SubscribeURL']) as response:
+            subscription_response = response.read()
+
+    return JsonResponse({}, status=400)
