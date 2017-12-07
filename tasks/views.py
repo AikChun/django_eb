@@ -30,9 +30,16 @@ def upload_file(request):
 
 
 def download_file_from_s_three(request):
+    #
+    # body = request.body.decode('utf-8')
+    # logger.error(body)
+    # body_data = json.loads(request.body.decode('utf-8'))
+    # logger.error(body_data)
 
-    token = request.POST['Token']
-    topic_arn = request.POST['TopicArn']
-    logger.error(token)
+    token = request.POST.get('Token')
+    topic_arn = request.POST.get('TopicArn')
+
+    logger.debug('token: {0}, topic_arn: {1}'.format(token, topic_arn))
+
 
     return JsonResponse({'token': token, 'TopicArn': topic_arn})
