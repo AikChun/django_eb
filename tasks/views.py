@@ -33,4 +33,4 @@ def download_file_from_s_three(request):
     token = body['Token']
     topic_arn = body['TopicArn']
 
-    return JsonResponse({'token': token, 'TopicArn': topic_arn})
+    return JsonResponse({'Token': token, 'TopicArn': topic_arn})
