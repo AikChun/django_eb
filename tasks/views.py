@@ -1,8 +1,10 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 from todo_app.settings import BASE_DIR
 
 import boto3
 import time
+import json
 
 
 # Create your views here.
@@ -27,7 +29,8 @@ def upload_file(request):
 
 def download_file_from_s_three(request):
 
-    print(request)
-    with open('download_file.txt', 'w') as f:
-        f.write('hello')
-        f.close()
+    body = json.loads(request.body)
+    token = body['Token']
+    topic_arn = body['TopicArn']
+
+    return JsonResponse({'Token': token, 'TopicArn': topic_arn})
