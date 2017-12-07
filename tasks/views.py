@@ -41,20 +41,22 @@ def download_file_from_s_three(request):
     if snsType == 'Notification':
         s_three = boto3.client('s3')
 
-        message = body_data.get('Message', {})
+        message_string = body_data.get('Message', {})
+        message = json.loads(message_string)
         records = message.get('Records', {})
         s = records[0].get('s3', {})
         bucket = s.get('bucket', {})
         bucket_name = bucket['name']
         obj = s.get('object', {})
+        key_name = obj.get('key', {})
 
         response = s_three.get_object(
             Bucket=bucket_name,
-            Key=obj['key'],
+            Key=key_name
         )
 
         stream_data = response['Body'].read()
-        filename = obj['key'].split('/')[-1]
+        filename = key_name.split('/')[-1]
 
         with open(filename, 'wb') as f:
             f.write(stream_data)
